@@ -21,7 +21,7 @@ body {
     background-color: #f1f5f9;
     color: #334155;
     line-height: 1.6;
-    padding: 20px;
+    padding: 10px;
 }
 
 ul {
@@ -86,8 +86,10 @@ h1 {
 
 .tabs {
     display: flex;
-    border-bottom: 1px solid #e2e8f0;
-}
+    flex-wrap: wrap; /* Allows tabs to wrap to a new line */
+    gap: 0.5rem;
+    overflow-x: auto; /* Optional: Add horizontal scroll if preferred */
+  }
 
 .tab {
     padding: 15px 20px;
@@ -171,6 +173,7 @@ button:hover {
     .grid {
         grid-template-columns: 1fr 1fr;
     }
+    
 }
 
 .form-flex {
@@ -418,5 +421,3 @@ tr:hover {
 .prepayment-remove:hover {
     background-color: #dc2626;
 }
-
-
