@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="site-info">
+              <h1>Financial Planner</h1>
+              <p class="tagline">Make the most out of your money</p>
+            </div>
+            <div class="nav-links">
+              <a href="info.html">Guides</a>
+              <a href="faq.html">FAQs</a>
+              <a href="disclaimer.html">Disclaimer</a>
+            </div>
+          </header>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showPanel('simple')">Simple SIP Calculator</div>
+            <div class="tab" onclick="showPanel('advanced')">Advanced SIP Calculator</div>
+            <div class="tab" onclick="showPanel('lumpsum')">Lump Sum SIP Calculator</div>
+            <div class="tab" onclick="showPanel('goal')">Goal-based SIP Calculator</div>
+            <div class="tab" onclick="showPanel('emi')">EMI Calculator</div>
+        </div>
+        
+        <div class="content">
+            <!-- Simple SIP Calculator -->
+            <div class="panel active" id="simple">
+                <form id="simpleForm">
+                    <div class="grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="simple-amount">Monthly Investment Amount (₹)</label>
+                                <input type="number" id="simple-amount" value="5000" min="100" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="simple-interest">Expected Annual Return Rate (%)</label>
+                                <input type="number" id="simple-interest" value="12" min="1" max="100" step="0.1" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label for="simple-years">Investment Period (Years)</label>
+                                <input type="number" id="simple-years" value="5" min="1" max="50" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="simple-step-up">Annual Step-up (%)</label>
+                                <input type="number" id="simple-step-up" value="10" min="0" max="100">
+                                <p class="info-text">Increase your investment amount annually</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="calculateSimpleSIP()">Calculate</button>
+                </form>
+                
+                <div id="simple-results" class="results-section hidden">
+                    <div class="summary-box">
+                        <h2>Investment Summary</h2>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <h3>Total Amount Invested</h3>
+                                <p id="simple-total-invested">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Estimated Returns</h3>
+                                <p id="simple-total-returns">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Total Value</h3>
+                                <div style="display: flex;">
+                                    <p id="simple-maturity-value">₹0</p>
+                                    <p style="font-size: small;" id="simple-maturity-value-percent">0%</p>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Annual Return Rate</h3>
+                                <p id="simple-annual-rate">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="accordion">View Year-by-Year Breakdown</button>
+                    <div class="panel-content">
+                        <div class="chart-container">
+                            <canvas id="simple-chart"></canvas>
+                        </div>
+                        <button onclick="printPageAsPDF('simple')">Export to PDF</button>
+                        <div style="overflow-x: auto;  margin-top: 20px;">
+                            <table id="simple-table">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Monthly SIP</th>
+                                        <th>Yearly Investment</th>
+                                        <th>Total Invested</th>
+                                        <th>Year-End Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced SIP Calculator -->
+            <div class="panel" id="advanced">
+                <form id="advancedForm">
+                    <div class="grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="advanced-frequency">Investment Frequency</label>
+                                <select id="advanced-frequency">
+                                    <option value="monthly">Monthly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="half-yearly">Half-Yearly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="advanced-amount">Investment Amount (₹)</label>
+                                <input type="number" id="advanced-amount" value="5000" min="100" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="advanced-interest">Expected Annual Return Rate (%)</label>
+                                <input type="number" id="advanced-interest" value="12" min="1" max="100" step="0.1" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="advanced-years">Investment Period (Years)</label>
+                                <input type="number" id="advanced-years" value="5" min="1" max="50" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label for="advanced-step-up-type">Step-up Type</label>
+                                <select id="advanced-step-up-type">
+                                    <option value="percentage">Percentage</option>
+                                    <option value="amount">Fixed Amount</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="advanced-step-up-value">Step-up Value</label>
+                                <input type="number" id="advanced-step-up-value" value="10" min="0">
+                                <p class="info-text">Percentage or fixed amount to increase</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="advanced-step-up-frequency">Step-up Frequency</label>
+                                <select id="advanced-step-up-frequency">
+                                    <option value="yearly">Every 12 months</option>
+                                    <option value="half-yearly">Every 6 months</option>
+                                    <option value="quarterly">Every 3 months</option>
+                                    <option value="monthly">Every month</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="inflation">Inflation Rate (%)</label>
+                                <input type="number" id="inflation" value="6" min="0" max="30" step="0.1">
+                                <p class="info-text">Adjust returns for inflation</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="calculateAdvancedSIP()">Calculate</button>
+                </form>
+                
+                <div id="advanced-results" class="results-section hidden">
+                    <div class="summary-box">
+                        <h2>Investment Summary</h2>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <h3>Total Amount Invested</h3>
+                                <p id="advanced-total-invested">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Estimated Returns</h3>
+                                <p id="advanced-total-returns">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Total Value</h3>
+                                <div style="display: flex;">
+                                    <p id="advanced-maturity-value">₹0</p>
+                                    <p style="font-size: small;" id="advanced-maturity-value-percent">0%</p>
+                                </div>  
+                            </div>
+                            <div class="summary-item">
+                                <h3>Inflation-Adjusted Value</h3>
+                                <p id="advanced-real-value">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="accordion">View Detailed Breakdown</button>
+                    <div class="panel-content">
+                        <div class="chart-container">
+                            <canvas id="advanced-chart"></canvas>
+                        </div>
+                        <button onclick="printPageAsPDF('advanced')">Export to PDF</button>
+                        <div style="overflow-x: auto;  margin-top: 20px;">
+                            <table id="advanced-table">
+                                <thead>
+                                    <tr>
+                                        <th>Period</th>
+                                        <th>Investment Amount</th>
+                                        <th>Period Investment</th>
+                                        <th>Total Invested</th>
+                                        <th>Period-End Value</th>
+                                        <th>Inflation-Adjusted Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Lump Sum Calculator -->
+            <div class="panel" id="lumpsum">
+                <form id="lumpsumForm">
+                    <div class="grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="lumpsum-amount">Initial Investment Amount (₹)</label>
+                                <input type="number" id="lumpsum-amount" value="100000" min="1000" required>
+                            </div>                              
+                            
+                            <div class="form-group">
+                                <label for="lumpsum-interest">Expected Annual Return Rate (%)</label>
+                                <input type="number" id="lumpsum-interest" value="12" min="1" max="100" step="0.1" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label for="lumpsum-years">Investment Period (Years)</label>
+                                <input type="number" id="lumpsum-years" value="5" min="1" max="50" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="lumpsum-inflation">Inflation Rate (%)</label>
+                                <input type="number" id="lumpsum-inflation" value="6" min="0" max="30" step="0.1">
+                                <p class="info-text">Adjust returns for inflation</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="calculateLumpSum()">Calculate</button>
+                </form>
+                
+                <div id="lumpsum-results" class="results-section hidden">
+                    <div class="summary-box">
+                        <h2>Investment Summary</h2>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <h3>Initial Investment</h3>
+                                <p id="lumpsum-initial-invested">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Estimated Returns</h3>
+                                <p id="lumpsum-total-returns">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Total Value</h3>
+                                <div style="display: flex;">
+                                    <p id="lumpsum-maturity-value">₹0</p>
+                                    <p style="font-size: small;" id="lumpsum-maturity-value-percent">0%</p>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Inflation-Adjusted Value</h3>
+                                <div style="display: flex;">
+                                    <p id="lumpsum-real-value">₹0</p>
+                                    <p style="font-size: small;" id="lumpsum-real-value-percent">0%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="accordion">View Year-by-Year Breakdown</button>
+                    <div class="panel-content">
+                        <div class="chart-container">
+                            <canvas id="lumpsum-chart"></canvas>
+                        </div>
+                        <button onclick="printPageAsPDF('lumpsum')">Export to PDF</button>
+                        <div style="overflow-x: auto;  margin-top: 20px;">
+                            <table id="lumpsum-table">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Initial Investment</th>
+                                        <th>Year-End Value</th>
+                                        <th>Inflation-Adjusted Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goal-based SIP Calculator -->
+            <div class="panel" id="goal">
+                <form id="goalForm">
+                    <div class="grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="goal-amount">Target Amount (₹)</label>
+                                <input type="number" id="goal-amount" value="1000000" min="1000" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="goal-interest">Expected Annual Return Rate (%)</label>
+                                <input type="number" id="goal-interest" value="12" min="1" max="100" step="0.1" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="goal-years">Time to Goal (Years)</label>
+                                <input type="number" id="goal-years" value="5" min="1" max="50" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label for="goal-step-up">Annual Step-up (%)</label>
+                                <input type="number" id="goal-step-up" value="10" min="0" max="100">
+                                <p class="info-text">Increase your investment amount annually</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="goal-inflation">Inflation Rate (%)</label>
+                                <input type="number" id="goal-inflation" value="6" min="0" max="30" step="0.1">
+                                <p class="info-text">Adjust target for inflation</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="goal-frequency">Investment Frequency</label>
+                                <select id="goal-frequency">
+                                    <option value="monthly">Monthly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="half-yearly">Half-Yearly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="calculateGoalSIP()">Calculate</button>
+                </form>
+                
+                <div id="goal-results" class="results-section hidden">
+                    <div class="summary-box">
+                        <h2>Goal-based SIP Summary</h2>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <h3>Required Monthly SIP</h3>
+                                <p id="goal-required-sip">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Total Amount Invested</h3>
+                                <p id="goal-total-invested">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Estimated Returns</h3>
+                                <p id="goal-total-returns">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Inflation-Adjusted Target</h3>
+                                <p id="goal-inflation-adjusted">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="accordion">View Year-by-Year Breakdown</button>
+                    <div class="panel-content">
+                        <div class="chart-container">
+                            <canvas id="goal-chart"></canvas>
+                        </div>
+                        <button onclick="printPageAsPDF('goal')">Export to PDF</button>
+                        <div style="overflow-x: auto;  margin-top: 20px;">
+                            <table id="goal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Monthly SIP</th>
+                                        <th>Yearly Investment</th>
+                                        <th>Total Invested</th>
+                                        <th>Year-End Value</th>
+                                        <th>Progress (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- EMI Calculator -->
+            <div class="panel" id="emi">
+                <form id="emiForm">
+                    <div class="grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="emi-loan-amount">Loan Amount (₹)</label>
+                                <input type="number" id="emi-loan-amount" value="1000000" min="1000" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="emi-interest">Annual Interest Rate (%)</label>
+                                <input type="number" id="emi-interest" value="10" min="1" max="50" step="0.1" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="emi-tenure">Loan Tenure</label>
+                                <div class="form-flex">
+                                    <input type="number" id="emi-tenure" value="20" min="1" max="360" required class="flex-grow">
+                                    <select id="emi-tenure-type">
+                                        <option value="years">Years</option>
+                                        <option value="months">Months</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label for="emi-step-up-type">EMI Step-up Type</label>
+                                <select id="emi-step-up-type">
+                                    <option value="none">None</option>
+                                    <option value="percentage">Percentage</option>
+                                    <option value="amount">Fixed Amount</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group emi-step-up-fields" style="display: none;">
+                                <label for="emi-step-up-value">Step-up Value</label>
+                                <input type="number" id="emi-step-up-value" value="10" min="0">
+                                <p class="info-text">Percentage or fixed amount to increase</p>
+                            </div>
+                            
+                            <div class="form-group emi-step-up-fields" style="display: none;">
+                                <label for="emi-step-up-frequency">Step-up Frequency</label>
+                                <select id="emi-step-up-frequency">
+                                    <option value="yearly">Yearly</option>
+                                    <option value="half-yearly">Half Yearly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="calculateEMI()">Calculate</button>
+                </form>
+                
+                <div id="emi-results" class="results-section hidden">
+                    <div class="summary-box">
+                        <h2>Loan Summary</h2>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <h3>Monthly EMI</h3>
+                                <p id="emi-monthly-payment">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Total Interest</h3>
+                                <p id="emi-total-interest">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Total Payment</h3>
+                                <p id="emi-total-payment">₹0</p>
+                            </div>
+                            <div class="summary-item">
+                                <h3>Effective Interest Rate</h3>
+                                <p id="emi-effective-rate">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="prepayment-section" style="margin-top: 20px; padding: 15px; background-color: #f8fafc; border-radius: 8px;">
+                        <h3>Add Prepayment</h3>
+                        <div class="form-flex" style="margin-top: 10px;">
+                            <div class="form-group" style="margin-bottom: 0; margin-right: 10px;">
+                                <label for="prepayment-amount">Amount (₹)</label>
+                                <input type="number" id="prepayment-amount" value="50000" min="1000">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0; margin-right: 10px;">
+                                <label for="prepayment-year">Year</label>
+                                <input type="number" id="prepayment-year" value="2" min="1">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0; margin-right: 10px;">
+                                <label for="prepayment-month">Month</label>
+                                <input type="number" id="prepayment-month" value="6" min="1" max="12">
+                            </div>
+                            <button type="button" onclick="addPrepayment()" style="align-self: flex-end;">Add</button>
+                        </div>
+                        <div id="prepayment-list" style="margin-top: 15px;">
+                            <p class="info-text">No prepayments added yet</p>
+                        </div>
+                    </div>
+                    
+                    <button class="accordion" style="margin-top: 20px;">View Amortization Schedule</button>
+                    <div class="panel-content">
+                        <div class="chart-container">
+                            <canvas id="emi-chart"></canvas>
+                        </div>
+                        <button onclick="printPageAsPDF('emi')">Export to PDF</button>
+                        
+                        <div style="overflow-x: auto; margin-top: 20px;">
+                            <table id="emi-table">
+                                <thead>
+                                    <tr>
+                                      <th>Year</th>
+                                      <th>Principal Paid</th>
+                                      <th>Interest Paid</th>
+                                      <th>Total Paid</th>
+                                      <th>Prepayments</th>
+                                      <th>Remaining Balance</th>
+                                      <th>Paid Off</th>
+                                    </tr>
+                                  </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/script.js"></script>
+</body>
+</html>
