@@ -20,18 +20,30 @@
               <a href="disclaimer.html">Disclaimer</a>
             </div>
           </header>
-        
-        <div class="tabs">
+          <button class="hamburger" onclick="toggleMenu()">☰</button>
+
+          <div class="backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
+          
+          <div class="tabs">
             <div class="tab active" onclick="showPanel('simple')">Simple SIP Calculator</div>
             <div class="tab" onclick="showPanel('advanced')">Advanced SIP Calculator</div>
             <div class="tab" onclick="showPanel('lumpsum')">Lump Sum SIP Calculator</div>
             <div class="tab" onclick="showPanel('goal')">Goal-based SIP Calculator</div>
             <div class="tab" onclick="showPanel('emi')">EMI Calculator</div>
-        </div>
+          </div>
+          
+          <div class="backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
+          <div class="side-menu" id="sideMenu">
+            <div class="tab active" onclick="showPanel('simple')">Simple SIP Calculator</div>
+            <div class="tab" onclick="showPanel('advanced')">Advanced SIP Calculator</div>
+            <div class="tab" onclick="showPanel('lumpsum')">Lump Sum SIP Calculator</div>
+            <div class="tab" onclick="showPanel('goal')">Goal-based SIP Calculator</div>
+            <div class="tab" onclick="showPanel('emi')">EMI Calculator</div>
+          </div>
         
         <div class="content">
-            <!-- Simple SIP Calculator -->
             <div class="panel active" id="simple">
+                <h2 class="tabTitle">Simple SIP Calculator</h2>
                 <form id="simpleForm">
                     <div class="grid">
                         <div>
@@ -113,8 +125,8 @@
                 </div>
             </div>
             
-            <!-- Advanced SIP Calculator -->
             <div class="panel" id="advanced">
+                <h2 class="tabTitle">Advanced SIP Calculator</h2>
                 <form id="advancedForm">
                     <div class="grid">
                         <div>
@@ -230,8 +242,8 @@
                     </div>
                 </div>
             </div>
-            <!-- Lump Sum Calculator -->
             <div class="panel" id="lumpsum">
+                <h2 class="tabTitle">Lump Sum SIP Calculator</h2>
                 <form id="lumpsumForm">
                     <div class="grid">
                         <div>
@@ -314,9 +326,8 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Goal-based SIP Calculator -->
             <div class="panel" id="goal">
+                <h2 class="tabTitle">Goal-based SIP Calculator</h2>
                 <form id="goalForm">
                     <div class="grid">
                         <div>
@@ -411,8 +422,8 @@
                     </div>
                 </div>
             </div>
-            <!-- EMI Calculator -->
             <div class="panel" id="emi">
+                <h2 class="tabTitle">Advanced EMI Calculator</h2>
                 <form id="emiForm">
                     <div class="grid">
                         <div>
